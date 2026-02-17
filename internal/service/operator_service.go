@@ -10,6 +10,14 @@ import (
 	"gorm.io/gorm"
 )
 
+// OperatorServicer — интерфейс для gRPC Deps (Dependency Inversion).
+type OperatorServicer interface {
+	SetStatus(userID uuid.UUID, available bool, maxSessions int) error
+	Next() (uuid.UUID, error)
+	Stats() (available int, total int, err error)
+	ListAll() ([]model.OperatorStatus, error)
+}
+
 type OperatorService struct {
 	db  *gorm.DB
 	mu  sync.Mutex
