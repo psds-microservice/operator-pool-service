@@ -1,0 +1,25 @@
+syntax = "proto3";
+package operator_pool_service;
+option go_package = "github.com/psds-microservice/operator-pool-service/pkg/gen/operator_pool_service;operator_pool_service";
+import "google/api/annotations.proto";
+
+service OperatorPoolService {
+  rpc SetStatus (SetStatusRequest) returns (SetStatusResponse) {
+    option (google.api.http) = { post: "/operator/status"; body: "*" }; }
+  rpc GetNext (GetNextRequest) returns (GetNextResponse) {
+    option (google.api.http) = { get: "/operator/next" }; }
+  rpc GetStats (GetStatsRequest) returns (GetStatsResponse) {
+    option (google.api.http) = { get: "/operator/stats" }; }
+  rpc ListOperators (ListOperatorsRequest) returns (ListOperatorsResponse) {
+    option (google.api.http) = { get: "/operator/list" }; }
+}
+
+message SetStatusRequest { string user_id = 1; bool available = 2; int32 max_sessions = 3; }
+message GetNextRequest {}
+message GetStatsRequest {}
+message ListOperatorsRequest {}
+message SetStatusResponse { bool ok = 1; }
+message GetNextResponse { string operator_id = 1; }
+message GetStatsResponse { int32 available = 1; int32 total = 2; }
+message OperatorStatus { string user_id = 1; bool available = 2; int32 active_sessions = 3; int32 max_sessions = 4; }
+message ListOperatorsResponse { repeated OperatorStatus operators = 1; }
