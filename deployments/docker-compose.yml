@@ -1,8 +1,8 @@
 services:
   app:
     build:
-      context: ..
-      dockerfile: deployments/Dockerfile
+      context: ../..
+      dockerfile: operator-pool-service/deployments/Dockerfile
     ports:
       - "8094:8094"
     environment:
