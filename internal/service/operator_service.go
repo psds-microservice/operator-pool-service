@@ -57,7 +57,10 @@ func (s *OperatorService) DecrementSessions(userID uuid.UUID) error {
 }
 
 // Next returns the next available operator (round-robin).
+// DB query is inside the critical section to avoid race: list and idx must be consistent.
 func (s *OperatorService) Next() (uuid.UUID, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	var list []model.OperatorStatus
 	if err := s.db.Where("available = ? AND active_sessions < max_sessions", true).Find(&list).Error; err != nil {
 		return uuid.Nil, err
@@ -65,10 +68,8 @@ func (s *OperatorService) Next() (uuid.UUID, error) {
 	if len(list) == 0 {
 		return uuid.Nil, errs.ErrNoOperatorAvailable
 	}
-	s.mu.Lock()
 	idx := s.idx % len(list)
 	s.idx++
-	s.mu.Unlock()
 	return list[idx].UserID, nil
 }
 
